@@ -1,5 +1,4 @@
 name: CI/CD - Unit Tests Only
-
 on:
   push:
     branches: [ main, master ]
@@ -41,14 +40,16 @@ jobs:
           name: test-results
           path: TestResults/**/*.trx
 
+      # ĐÃ THAY ĐỔI DUY NHẤT 1 BƯỚC NÀY
       - name: Publish Test Report
-        uses: dorny/test-reporter@v1
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
-          name: Unit Test Results - QLTV
-          path: TestResults/**/*.trx
-          reporter: dotnet-trx
-          fail-on-error: false
+          report_paths: 'TestResults/**/*.trx'
+          check_name: 'Unit Test Results - QLTV'
+          fail_on_failure: false
+          # (tùy chọn) nếu muốn comment vào PR thì thêm:
+          # comment_on_pr: true
 
       - name: Generate Coverage Report
         if: always()

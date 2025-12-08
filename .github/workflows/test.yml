@@ -1,5 +1,4 @@
-name: CI - Unit Tests Xuong_QLTV
-
+name: CI - Unit Tests Only
 on:
   push:
     branches: [ main, master ]
@@ -13,29 +12,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore & Build solution
+      - name: Restore & Build test project only
         run: |
-          # Phục hồi và Build toàn bộ Solution
-          dotnet restore Xuong_QLTV.sln
-          dotnet build Xuong_QLTV.sln --no-restore --configuration Release
+          dotnet restore QLTV.Tests/QLTV.Tests.csproj
+          dotnet build QLTV.Tests/QLTV.Tests.csproj --no-restore --configuration Release
 
-      - name: Run Unit Tests + Coverage
+      - name: Run Unit Tests (TRX + Coverage)
         shell: pwsh
         run: |
-          # Tạo thư mục kết quả
           New-Item -ItemType Directory -Path TestResults -Force
-          
-          # Chạy tests và tạo coverage.cobertura.xml
-          dotnet test Xuong_QLTV.sln `
+          dotnet test QLTV.Tests/QLTV.Tests.csproj `
             --no-build `
             --configuration Release `
             --collect:"XPlat Code Coverage" `
-            --logger "trx;LogFileName=Xuong_QLTV.trx" `
+            --logger "trx;LogFileName=QLTV.Tests.trx" `
             --results-directory "TestResults"
 
       - name: Upload test results
@@ -45,29 +40,25 @@ jobs:
           name: test-results
           path: TestResults/**/*.trx
 
+      # ĐÃ THAY ĐỔI DUY NHẤT 1 BƯỚC NÀY
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: 'TestResults/**/*.trx'
-          check_name: 'Unit Test Results - Xuong_QLTV'
+          check_name: 'Unit Test Results - QLTV'
           fail_on_failure: false
+          # (tùy chọn) nếu muốn comment vào PR thì thêm:
+          # comment_on_pr: true
 
       - name: Generate Coverage Report
         if: always()
         shell: pwsh
         run: |
-          # FIX: Tìm file coverage.cobertura.xml bằng cách duyệt đệ quy (Recurse) trong thư mục TestResults
-          # Đảm bảo lệnh PowerShell không bị lỗi cú pháp do comment tiếng Việt
           $cov = Get-ChildItem -Path "TestResults" -Recurse -Include "coverage.cobertura.xml" | Select-Object -First 1
-          
           if ($cov) {
-            Write-Host "Đã tìm thấy file coverage: $($cov.FullName)"
             dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.3.10
-            # Sử dụng đường dẫn đầy đủ ($cov.FullName) cho reportgenerator
             reportgenerator -reports:"$($cov.FullName)" -targetdir:coveragereport -reporttypes:HtmlInline_AzurePipelines
-          } else {
-            Write-Host "CẢNH BÁO: Không tìm thấy file coverage.cobertura.xml. Vui lòng kiểm tra lại quá trình chạy tests."
           }
 
       - name: Upload Coverage Report

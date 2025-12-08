@@ -30,8 +30,7 @@ jobs:
           # Tạo thư mục kết quả
           New-Item -ItemType Directory -Path TestResults -Force
           
-          # Chạy tests. Kết quả (TRX và Coverage) sẽ được đặt trong thư mục TestResults
-          # Lưu ý: Các file coverage.cobertura.xml sẽ nằm trong các thư mục con
+          # Chạy tests và tạo coverage.cobertura.xml
           dotnet test Xuong_QLTV.sln `
             --no-build `
             --configuration Release `
@@ -59,7 +58,7 @@ jobs:
         shell: pwsh
         run: |
           # FIX: Tìm file coverage.cobertura.xml bằng cách duyệt đệ quy (Recurse) trong thư mục TestResults
-          # Lệnh này tìm chính xác file, không bị ảnh hưởng bởi đường dẫn tạm thời D:\a\...
+          # Đảm bảo lệnh PowerShell không bị lỗi cú pháp do comment tiếng Việt
           $cov = Get-ChildItem -Path "TestResults" -Recurse -Include "coverage.cobertura.xml" | Select-Object -First 1
           
           if ($cov) {

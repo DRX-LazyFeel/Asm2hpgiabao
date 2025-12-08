@@ -1,5 +1,9 @@
+
 ﻿using static DTO_Xuong.ThongKe;
 namespace DTO_Xuong
+
+
+﻿namespace DTO_Xuong
 
 {
     public class ThongKe

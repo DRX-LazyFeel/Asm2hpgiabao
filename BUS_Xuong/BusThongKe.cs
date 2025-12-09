@@ -1,23 +1,20 @@
-﻿using DAL_Xuong.Interfaces;
-using DTO_Xuong;
-using System;
-using System.Collections.Generic;
-using static DTO_Xuong.ThongKe;
+﻿using DAL_Xuong.Interface;
+using System.Data;
 
 namespace BUS_Xuong
 {
-    public class BUSThongKe
+    public class BusThongKe
     {
         private readonly IThongKeRepository _repo;
 
-        public BUSThongKe(IThongKeRepository repo)
+        public BusThongKe(IThongKeRepository repo)
         {
-            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _repo = repo;
         }
 
-        public List<ThongKeDTO> GetThongKe(string maNV = "ALL")
+        public DataTable HienThiSachHot()
         {
-            return _repo.GetThongKe(maNV);
+            return _repo.GetSachMuonNhieuNhat();
         }
     }
 }

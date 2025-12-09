@@ -1,5 +1,4 @@
 ﻿using DAL_Xuong;
-using DAL_Xuong.Interface;
 using DTO_Xuong;
 using System;
 using System.Collections.Generic;
@@ -11,95 +10,115 @@ namespace BUS_Xuong
 {
     public class BUSNhanVien
     {
-        private readonly INhanVienRepository _nhanVienRepo;
+        DALNhanVien dalNhanVien = new DALNhanVien();
 
-        public BUSNhanVien(INhanVienRepository nhanVienRepo)
+        public NhanVien DangNhap(string username, string password)
         {
-            _nhanVienRepo = nhanVienRepo ?? throw new ArgumentNullException(nameof(nhanVienRepo));
-        }
-
-        /// <summary>
-        /// Lấy toàn bộ danh sách nhân viên
-        /// </summary>
-        public List<NhanVien> GetAllNhanVien()
-        {
-            return _nhanVienRepo.LayTatCa();
-        }
-
-        /// <summary>
-        /// Thêm nhân viên mới
-        /// </summary>
-        public bool InsertNhanVien(NhanVien nv)
-        {
-            if (nv == null || string.IsNullOrWhiteSpace(nv.MaNhanVien) || string.IsNullOrWhiteSpace(nv.Ten))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(nv.Email) || !nv.Email.Contains("@") || !nv.Email.Contains("."))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(nv.MatKhau))
-                return false;
-
-            try
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                _nhanVienRepo.ThemNhanVien(nv);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Cập nhật thông tin nhân viên
-        /// </summary>
-        public bool UpdateNhanVien(NhanVien nv)
-        {
-            if (nv == null || string.IsNullOrWhiteSpace(nv.MaNhanVien))
-                return false;
-
-            try
-            {
-                _nhanVienRepo.SuaNhanVien(nv);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Xóa nhân viên theo mã
-        /// </summary>
-        public bool DeleteNhanVien(string maNV)
-        {
-            if (string.IsNullOrWhiteSpace(maNV))
-                return false;
-
-            try
-            {
-                _nhanVienRepo.XoaNhanVien(maNV);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Tìm nhân viên theo mã
-        /// </summary>
-        public NhanVien FindByMa(string maNV)
-        {
-            if (string.IsNullOrWhiteSpace(maNV))
                 return null;
+            }
 
-            return _nhanVienRepo.TimNhanVienTheoMa(maNV);
+            return dalNhanVien.getNhanVien(username, password);
+        }
+        public List<NhanVien> GetNhanVienDangHoatDong()
+        {
+            return dalNhanVien.selectAll()
+                .Where(nv => nv.TrangThai == true) // lọc nhân viên còn đang làm việc
+                .ToList();
+        }
+        public bool UpdateMatKhau(string email, string matKhauCu, string matKhauMoi)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(matKhauCu) || string.IsNullOrEmpty(matKhauMoi))
+                {
+                    return false;
+                }
+                return dalNhanVien.UpdateMatKhau(email, matKhauCu, matKhauMoi);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public List<NhanVien> GetNhanVienList()
+        {
+            return dalNhanVien.selectAll();
+        }
+
+        public List<NhanVien> SearchNhanVien(string keyword)
+        {
+            List<NhanVien> nv = new List<NhanVien>();
+            try
+            {
+                return dalNhanVien.SearchNhanVien(keyword);
+            }
+            catch (Exception ex)
+            {
+                return nv;
+            }
+        }
+        public string InsertNhanVien(NhanVien nv)
+        {
+            try
+            {
+                nv.MaNhanVien = dalNhanVien.generateMaNhanVien();
+                if (string.IsNullOrEmpty(nv.MaNhanVien))
+                {
+                    return "Mã nhân viên không hợp lệ.";
+                }
+                if (dalNhanVien.checkEmailExists(nv.Email))
+                {
+                    return "Email đã tồn tại.";
+                }
+                dalNhanVien.insertNhanVien(nv);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                //return "Thêm mới không thành công.";
+                return "Lỗi: " + ex.Message;
+            }
+        }
+
+        public string UpdateNhanVien(NhanVien nv)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(nv.MaNhanVien))
+                {
+                    return "Mã nhân viên không hợp lệ.";
+                }
+
+                dalNhanVien.updateNhanVien(nv);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                //return "Cập nhật không thành công.";
+                return "Lỗi: " + ex.Message;
+            }
+        }
+
+        public string DeleteNhanVien(string maNV)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(maNV))
+                {
+                    return "Mã nhân viên không hợp lệ.";
+                }
+
+                dalNhanVien.deleteNhanVien(maNV);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                //return "Xóa không thành công.";
+                return "Lỗi: " + ex.Message;
+            }
         }
     }
-
-
 }

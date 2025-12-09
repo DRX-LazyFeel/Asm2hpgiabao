@@ -6,7 +6,7 @@ namespace BUS_Xuong
 {
     public class BUSTrangThaiThanhToan
     {
-        // Khai báo Interface
+        // < Khai báo Interface >
         private readonly ITrangThaiThanhToanRepository _repo;
 
         // Constructor nhận Interface (Dependency Injection)

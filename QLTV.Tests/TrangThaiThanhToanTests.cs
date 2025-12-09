@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using BUS_Xuong;
 using DTO_Xuong;
-using QLTV.Tests.TestDoubles;
+using QLTV.Tests.TestDoubles; //nhớ using TestDoubles
 using System.Linq;
 
 namespace QLTV.Tests

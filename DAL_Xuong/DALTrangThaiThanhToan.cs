@@ -26,7 +26,7 @@ namespace DAL_Xuong
                     MaTrangThai = r["MaTrangThai"].ToString(),
                     TenTrangThai = r["TenTrangThai"].ToString(),
                     NgayTao = Convert.ToDateTime(r["NgayTao"]),
-                    TrangThai = Convert.ToBoolean(r["TrangThai"]) // 👉 thêm dòng này
+                    TrangThai = Convert.ToBoolean(r["TrangThai"]) // thêm dòng này
                 };
                 ds.Add(tt);
             }
@@ -38,7 +38,7 @@ namespace DAL_Xuong
         public bool Insert(TrangThaiThanhToan t)
         {
             string sql = "INSERT INTO TrangThaiThanhToan (MaTrangThai, TenTrangThai, NgayTao, TrangThai) VALUES (@0, @1, @2, @3)";
-            List<object> args = new List<object> { t.MaTrangThai, t.TenTrangThai, t.NgayTao, t.TrangThai }; // 👉 thêm t.TrangThai
+            List<object> args = new List<object> { t.MaTrangThai, t.TenTrangThai, t.NgayTao, t.TrangThai }; // thêm t.TrangThai
 
             try
             {
@@ -69,7 +69,7 @@ namespace DAL_Xuong
 
         public bool Delete(string ma)
         {
-            string sql = "UPDATE TrangThaiThanhToan SET TrangThai = 0 WHERE MaTrangThai = @0"; 
+            string sql = "UPDATE TrangThaiThanhToan SET TrangThai = 0 WHERE MaTrangThai = @0";
             List<object> args = new List<object> { ma };
 
             try
@@ -96,9 +96,9 @@ namespace DAL_Xuong
             reader.Close();
 
             int so = int.Parse(lastMa.Substring(2)) + 1; // Cắt bỏ "TT" -> giữ lại số
-            return "TT" + so.ToString("D3"); // Tạo mã mới dạng TT001, TT002,...
+            return "TT" + so.ToString("D3"); // Tạo mã mới dạng TT001, TT002
         }
-      
-    }
 
     }
+
+}

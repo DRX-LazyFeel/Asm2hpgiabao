@@ -1,4 +1,4 @@
-﻿using DAL_Xuong.Interface;
+﻿using DAL_Xuong.Interface; //nhớ using interface
 using DTO_Xuong;
 using System.Collections.Generic;
 using System.Linq;
